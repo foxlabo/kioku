@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kioku
 
-## Getting Started
+Local Markdown notes with an AI panel that **answers questions using your own
+notes**. Type a note, hit save, then ask the assistant — it retrieves the
+relevant notes and writes a grounded answer.
 
-First, run the development server:
+> Inspired by [Reor](https://github.com/reorproject/reor). Independently
+> re-implemented from scratch as a portfolio project.
+
+## Status
+
+🚧 **Pre-MVP** — under active development.
+
+## Features (planned for MVP)
+
+- 📝 **Markdown notes** — title, body, folder; live preview
+- 🔎 **Keyword search** — fast, local
+- 🤖 **Ask your notes** — chat panel that retrieves your notes and answers
+  with citations (OpenAI)
+- 💾 **Local-first** — SQLite-backed, no server required
+- 🌐 **Japanese-first UX** — UI strings and prompts tuned for Japanese
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router) + React 19.2
+- **Styling**: Tailwind CSS 4 + `@tailwindcss/typography`
+- **AI**: Vercel AI SDK v6 (OpenAI)
+- **DB**: SQLite (`better-sqlite3`) + Drizzle ORM
+- **Quality**: Biome + Vitest + Playwright, TypeScript strict
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # add OPENAI_API_KEY to enable Ask
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Development](./docs/DEVELOPMENT.md)
+- [Roadmap](./docs/ROADMAP.md)
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](./LICENSE)
