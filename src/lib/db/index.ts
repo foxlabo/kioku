@@ -11,5 +11,8 @@ sqlite.pragma('journal_mode = WAL')
 sqlite.pragma('foreign_keys = ON')
 
 export const db = drizzle(sqlite, { schema })
+/** Raw better-sqlite3 handle. Used by helpers that need iterators or
+ *  transactions Drizzle doesn't expose directly. */
+export const sqliteHandle = sqlite
 export type DB = typeof db
 export { schema }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Eye, FilePen, Loader2, Save, Trash2 } from 'lucide-react'
+import { Download, Eye, FilePen, Loader2, Save, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -47,6 +47,7 @@ export function NoteEditor({ note }: NoteEditorProps) {
   const [folder, setFolder] = useState(note.folder)
   const [mode, setMode] = useState<'edit' | 'preview'>('edit')
   const [saveState, setSaveState] = useState<SaveState>({ kind: 'idle' })
+  const [downloading, setDownloading] = useState(false)
   const [, startTransition] = useTransition()
 
   // The editor remounts (via key={note.id} on the parent) when the active
@@ -122,6 +123,53 @@ export function NoteEditor({ note }: NoteEditorProps) {
       }
     }
   }, [])
+
+  /** Trigger the queued + chained-pending sequence to drain. Returns true
+   *  when local state matches the persisted state at the end of the wait,
+   *  false on save error, conflict, or timeout. Used by the export button
+   *  so a click immediately after typing downloads the freshly-persisted
+   *  version, not a stale one. */
+  const flushAndWait = useCallback(async (): Promise<boolean> => {
+    if (conflictedRef.current) return false
+    const startedAt = Date.now()
+    void save()
+    while (inFlightSeq.current !== null || pending.current) {
+      if (conflictedRef.current) return false
+      if (Date.now() - startedAt > 5_000) return false
+      await new Promise((r) => setTimeout(r, 50))
+    }
+    // Final invariant: nothing dirty remains. Returns false if a save
+    // error left the buffer un-flushed.
+    const l = latest.current
+    const s = lastSaved.current
+    return l.title === s.title && l.body === s.body && l.folder === s.folder
+  }, [save])
+
+  async function downloadMarkdown(): Promise<void> {
+    if (downloading) return
+    setDownloading(true)
+    try {
+      const ok = await flushAndWait()
+      if (!ok) {
+        // Surface the SaveIndicator-driven error / conflict UI; don't
+        // download a snapshot we know is out of sync with the editor.
+        setSaveState({
+          kind: 'error',
+          message: 'ダウンロード前の保存に失敗したため中止しました。',
+        })
+        return
+      }
+      const a = document.createElement('a')
+      a.href = `/api/notes/${encodeURIComponent(noteIdRef.current)}/export`
+      a.rel = 'noopener'
+      a.download = ''
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   // Debounced autosave.
   useEffect(() => {
@@ -261,6 +309,15 @@ export function NoteEditor({ note }: NoteEditorProps) {
           </div>
           <Button size="sm" variant="outline" onClick={() => void save()}>
             <Save className="size-3.5" /> 保存
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            aria-label="このノートを .md でダウンロード"
+            disabled={downloading}
+            onClick={() => void downloadMarkdown()}
+          >
+            <Download className="size-3.5" /> .md
           </Button>
           <Dialog>
             <DialogTrigger asChild>

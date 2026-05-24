@@ -1,4 +1,4 @@
-import { Plus, Sparkles } from 'lucide-react'
+import { Download, Plus, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { AskPanel } from '@/components/notes/ask-panel'
 import { NoteList } from '@/components/notes/note-list'
@@ -20,11 +20,20 @@ export default function HomePage() {
           <Sparkles className="size-4 text-zinc-700" />
           Kioku
         </Link>
-        <Button asChild size="sm" variant="default">
-          <Link href="/notes/new">
-            <Plus className="size-3.5" /> 新規ノート
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {notes.length > 0 && (
+            <Button asChild size="sm" variant="outline" aria-label="全ノートを ZIP でダウンロード">
+              <a href="/api/notes/export" download>
+                <Download className="size-3.5" /> 全件 ZIP
+              </a>
+            </Button>
+          )}
+          <Button asChild size="sm" variant="default">
+            <Link href="/notes/new">
+              <Plus className="size-3.5" /> 新規ノート
+            </Link>
+          </Button>
+        </div>
       </header>
       <div className="grid flex-1 grid-cols-[280px_1fr_360px] overflow-hidden">
         <aside className="border-r border-zinc-200 bg-zinc-50 p-3">
