@@ -4,9 +4,6 @@ Local Markdown notes with an AI panel that **answers questions using your own
 notes**. Type a note, hit save, then ask the assistant — it retrieves the
 relevant notes and writes a grounded answer.
 
-> Inspired by [Reor](https://github.com/reorproject/reor). Independently
-> re-implemented from scratch as a portfolio project.
-
 ## Status
 
 🚧 **Pre-MVP** — under active development.
